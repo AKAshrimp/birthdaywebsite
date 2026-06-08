@@ -46,6 +46,10 @@ export function isValidPlayerName(name) {
   return String(name || "").trim().length > 0;
 }
 
+export function getObstacleImageIndexForScore(score, wallCount = OBSTACLE_IMAGE_SRCS.length) {
+  return Math.floor(Math.max(0, score) / 10) % wallCount;
+}
+
 export class BirthdayAudio {
   constructor() {
     this.context = null;
@@ -251,7 +255,7 @@ class FlappyGame {
       topHeight,
       gap,
       vegetable: VEGETABLES[Math.floor(Math.random() * VEGETABLES.length)],
-      imageIndex: Math.floor(Math.random() * this.obstacleImages.length),
+      imageIndex: getObstacleImageIndexForScore(this.score, this.obstacleImages.length),
       decorationOffset: Math.random() * 100,
       scored: false,
     });

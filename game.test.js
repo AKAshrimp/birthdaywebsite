@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   circleOverlapsRect,
+  getObstacleImageIndexForScore,
   getRenderDpr,
   insetRect,
   isValidPlayerName,
@@ -44,13 +45,21 @@ test("vegetable obstacle list contains no pipe sprites", () => {
   assert.equal(VEGETABLES.includes("🚰"), false);
 });
 
-test("game has seven randomized vegetable wall images", () => {
+test("game has seven vegetable wall images", () => {
   assert.equal(OBSTACLE_IMAGE_SRCS.length, 7);
   assert.deepEqual(
     OBSTACLE_IMAGE_SRCS.map((src) => src.split("/").at(-1).split("?")[0]),
     ["wall1.png", "wall2.png", "wall3.png", "wall4.png", "wall5.png", "wall6.png", "wall7.png"],
   );
   assert.ok(OBSTACLE_IMAGE_SRCS.every((src) => /\?v=\d+$/.test(src)));
+});
+
+test("obstacle wall image cycles every ten points", () => {
+  assert.equal(getObstacleImageIndexForScore(0, 7), 0);
+  assert.equal(getObstacleImageIndexForScore(9, 7), 0);
+  assert.equal(getObstacleImageIndexForScore(10, 7), 1);
+  assert.equal(getObstacleImageIndexForScore(69, 7), 6);
+  assert.equal(getObstacleImageIndexForScore(70, 7), 0);
 });
 
 test("leaderboard name and score inputs are sanitized", () => {
