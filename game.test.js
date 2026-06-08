@@ -4,6 +4,7 @@ import {
   circleOverlapsRect,
   getRenderDpr,
   insetRect,
+  isValidPlayerName,
   isSafeVegetableSpawn,
   OBSTACLE_IMAGE_SRCS,
   rectsOverlap,
@@ -58,6 +59,12 @@ test("leaderboard name and score inputs are sanitized", () => {
   assert.equal(normalizeScore(17.9), 17);
   assert.equal(normalizeScore(-30), 0);
   assert.equal(normalizeScore(1000000), 9999);
+});
+
+test("player name must not be blank before submitting score", () => {
+  assert.equal(isValidPlayerName(""), false);
+  assert.equal(isValidPlayerName("   "), false);
+  assert.equal(isValidPlayerName("Vincy"), true);
 });
 
 test("leaderboard falls back to session scores when cloud endpoint is not configured", async () => {

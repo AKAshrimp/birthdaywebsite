@@ -42,6 +42,10 @@ export function getRenderDpr(devicePixelRatio = 1) {
   return Math.min(Number(devicePixelRatio) || 1, 1.35);
 }
 
+export function isValidPlayerName(name) {
+  return String(name || "").trim().length > 0;
+}
+
 export class BirthdayAudio {
   constructor() {
     this.context = null;
@@ -173,7 +177,7 @@ class FlappyGame {
   reset() {
     this.state = "playing";
     this.score = 0;
-    this.obstacleTimer = 0;
+    this.obstacleTimer = this.width >= 760 ? 0.35 : 0.6;
     this.obstacles = [];
     this.particles = [];
     this.scoreSubmitted = false;
@@ -681,6 +685,12 @@ function bootstrap() {
   elements.form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (game.scoreSubmitted) {
+      return;
+    }
+    if (!isValidPlayerName(elements.playerName.value)) {
+      elements.leaderboardStatus.textContent = "Please input your name.";
+      elements.leaderboardStatus.classList.add("error");
+      elements.playerName.focus();
       return;
     }
     game.scoreSubmitted = true;
