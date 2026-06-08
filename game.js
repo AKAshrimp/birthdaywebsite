@@ -305,76 +305,59 @@ class FlappyGame {
   }
 
   drawBackground() {
+    const time = performance.now();
     const gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
-    gradient.addColorStop(0, "#fff3c7");
-    gradient.addColorStop(0.45, "#ffe5d4");
-    gradient.addColorStop(1, "#d9f2c4");
+    gradient.addColorStop(0, "#8ed8ff");
+    gradient.addColorStop(0.48, "#f7e9b1");
+    gradient.addColorStop(1, "#8de071");
     this.ctx.fillStyle = gradient;
     this.ctx.fillRect(0, 0, this.width, this.height);
 
-    this.drawPaperGrid();
-    this.drawClouds();
-    this.drawGardenHills();
-    this.drawGrassStrip();
-    this.drawBackgroundStickers();
+    this.drawSunGlow();
+    this.drawRunnerClouds(time);
+    this.drawRunnerHills(time);
+    this.drawGardenRows(time);
+    this.drawFloatingLeaves(time);
+    this.drawRunnerGrass(time);
   }
 
-  drawPaperGrid() {
-    this.ctx.save();
-    this.ctx.strokeStyle = "rgba(128, 92, 111, 0.09)";
-    this.ctx.lineWidth = 1;
-    const grid = 44;
-    const offset = (performance.now() * 0.008) % grid;
-    for (let x = -grid + offset; x < this.width + grid; x += grid) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this.height);
-      this.ctx.stroke();
-    }
-    for (let y = 0; y < this.height; y += grid) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this.width, y);
-      this.ctx.stroke();
-    }
-    this.ctx.restore();
+  drawSunGlow() {
+    const glow = this.ctx.createRadialGradient(this.width * 0.82, this.height * 0.14, 20, this.width * 0.82, this.height * 0.14, 220);
+    glow.addColorStop(0, "rgba(255, 226, 105, 0.52)");
+    glow.addColorStop(1, "rgba(255, 226, 105, 0)");
+    this.ctx.fillStyle = glow;
+    this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
-  drawClouds() {
+  drawRunnerClouds(time) {
     this.ctx.save();
-    const drift = (performance.now() * 0.012) % (this.width + 260);
-    for (let i = 0; i < 4; i += 1) {
-      const x = (i * 260 - drift + this.width + 180) % (this.width + 260) - 130;
-      const y = 58 + (i % 2) * 54;
-      this.ctx.fillStyle = "rgba(255, 255, 255, 0.58)";
+    const drift = (time * 0.018) % (this.width + 320);
+    for (let i = 0; i < 5; i += 1) {
+      const x = (i * 250 - drift + this.width + 220) % (this.width + 320) - 160;
+      const y = 44 + (i % 3) * 44;
+      this.ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
       this.ctx.beginPath();
-      this.ctx.ellipse(x, y, 44, 20, 0, 0, Math.PI * 2);
-      this.ctx.ellipse(x + 35, y - 8, 38, 24, 0, 0, Math.PI * 2);
-      this.ctx.ellipse(x + 76, y, 46, 20, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(x, y, 46, 18, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(x + 38, y - 10, 42, 24, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(x + 82, y, 52, 19, 0, 0, Math.PI * 2);
       this.ctx.fill();
     }
     this.ctx.restore();
   }
 
-  drawGardenHills() {
-    const baseY = this.height * 0.72;
-    this.ctx.save();
-    this.ctx.fillStyle = "rgba(126, 207, 116, 0.38)";
-    this.ctx.beginPath();
-    this.ctx.moveTo(0, this.height);
-    for (let x = 0; x <= this.width + 40; x += 40) {
-      const y = baseY + Math.sin(x * 0.012) * 20;
-      this.ctx.lineTo(x, y);
-    }
-    this.ctx.lineTo(this.width, this.height);
-    this.ctx.closePath();
-    this.ctx.fill();
+  drawRunnerHills(time) {
+    this.drawHillLayer(time, 0.016, this.height * 0.62, 34, "rgba(101, 192, 111, 0.48)");
+    this.drawHillLayer(time, 0.032, this.height * 0.7, 28, "rgba(65, 166, 86, 0.45)");
+  }
 
-    this.ctx.fillStyle = "rgba(95, 184, 103, 0.32)";
+  drawHillLayer(time, speed, baseY, amplitude, color) {
+    this.ctx.save();
+    this.ctx.fillStyle = color;
     this.ctx.beginPath();
     this.ctx.moveTo(0, this.height);
-    for (let x = 0; x <= this.width + 40; x += 40) {
-      const y = baseY + 58 + Math.cos(x * 0.015) * 18;
+    const offset = time * speed;
+    for (let x = -40; x <= this.width + 80; x += 40) {
+      const y = baseY + Math.sin((x + offset) * 0.012) * amplitude;
       this.ctx.lineTo(x, y);
     }
     this.ctx.lineTo(this.width, this.height);
@@ -383,43 +366,67 @@ class FlappyGame {
     this.ctx.restore();
   }
 
-  drawGrassStrip() {
-    const y = this.height - 52;
+  drawGardenRows(time) {
+    const y = this.height * 0.78;
     this.ctx.save();
-    this.ctx.fillStyle = "#8fe07b";
-    this.ctx.fillRect(0, y, this.width, 52);
-    this.ctx.strokeStyle = "rgba(73, 49, 65, 0.16)";
-    this.ctx.lineWidth = 3;
+    this.ctx.strokeStyle = "rgba(55, 129, 61, 0.22)";
+    this.ctx.lineWidth = 8;
+    this.ctx.lineCap = "round";
+    const offset = (time * 0.09) % 70;
+    for (let i = -2; i < 12; i += 1) {
+      const rowY = y + i * 28;
+      this.ctx.beginPath();
+      this.ctx.moveTo(-80 + offset, rowY);
+      this.ctx.bezierCurveTo(this.width * 0.25, rowY - 18, this.width * 0.65, rowY + 18, this.width + 80 + offset, rowY - 6);
+      this.ctx.stroke();
+    }
+    this.ctx.restore();
+  }
+
+  drawFloatingLeaves(time) {
+    this.ctx.save();
+    const colors = ["#5fc56d", "#ff9f43", "#7ed957", "#ff8fb8"];
+    for (let i = 0; i < 14; i += 1) {
+      const x = (i * 137 - time * (0.035 + (i % 3) * 0.012)) % (this.width + 100);
+      const y = 110 + ((i * 83 + time * 0.018) % Math.max(220, this.height * 0.55));
+      this.ctx.save();
+      this.ctx.translate(x < -30 ? x + this.width + 100 : x, y);
+      this.ctx.rotate(Math.sin(time * 0.001 + i) * 0.7);
+      this.ctx.fillStyle = colors[i % colors.length];
+      this.ctx.globalAlpha = 0.38;
+      this.ctx.beginPath();
+      this.ctx.ellipse(0, 0, 10 + (i % 3) * 3, 5 + (i % 2) * 2, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.restore();
+    }
+    this.ctx.globalAlpha = 1;
+    this.ctx.restore();
+  }
+
+  drawRunnerGrass(time) {
+    const y = this.height - 64;
+    this.ctx.save();
+    const ground = this.ctx.createLinearGradient(0, y, 0, this.height);
+    ground.addColorStop(0, "#64c96b");
+    ground.addColorStop(1, "#2f9d54");
+    this.ctx.fillStyle = ground;
+    this.ctx.fillRect(0, y, this.width, 64);
+    this.ctx.strokeStyle = "rgba(255, 255, 255, 0.42)";
+    this.ctx.lineWidth = 4;
     this.ctx.beginPath();
-    this.ctx.moveTo(0, y + 2);
-    this.ctx.lineTo(this.width, y + 2);
+    this.ctx.moveTo(0, y + 3);
+    this.ctx.lineTo(this.width, y + 3);
     this.ctx.stroke();
 
-    this.ctx.fillStyle = "rgba(44, 139, 73, 0.36)";
-    for (let x = -10; x < this.width + 20; x += 18) {
+    const offset = (time * 0.16) % 32;
+    this.ctx.fillStyle = "rgba(20, 104, 55, 0.38)";
+    for (let x = -32; x < this.width + 32; x += 32) {
+      const bladeX = x + offset;
       this.ctx.beginPath();
-      this.ctx.moveTo(x, this.height);
-      this.ctx.quadraticCurveTo(x + 7, y + 10, x + 16, this.height);
+      this.ctx.moveTo(bladeX, this.height);
+      this.ctx.quadraticCurveTo(bladeX + 10, y + 8, bladeX + 22, this.height);
       this.ctx.fill();
     }
-    this.ctx.restore();
-  }
-
-  drawBackgroundStickers() {
-    this.ctx.save();
-    const stickers = [
-      { text: "✦", x: 0.12, y: 0.24, size: 22, color: "#ff9f43" },
-      { text: "✿", x: 0.82, y: 0.3, size: 24, color: "#ff8fb8" },
-      { text: "•", x: 0.72, y: 0.18, size: 34, color: "#83c8ff" },
-      { text: "✦", x: 0.22, y: 0.58, size: 18, color: "#69d38a" },
-    ];
-    stickers.forEach((sticker) => {
-      this.ctx.font = `900 ${sticker.size}px Inter, sans-serif`;
-      this.ctx.fillStyle = sticker.color;
-      this.ctx.globalAlpha = 0.46;
-      this.ctx.fillText(sticker.text, this.width * sticker.x, this.height * sticker.y);
-    });
-    this.ctx.globalAlpha = 1;
     this.ctx.restore();
   }
 
