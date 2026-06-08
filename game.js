@@ -306,20 +306,121 @@ class FlappyGame {
 
   drawBackground() {
     const gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
-    gradient.addColorStop(0, "#1d1248");
-    gradient.addColorStop(0.62, "#623369");
-    gradient.addColorStop(1, "#894a42");
+    gradient.addColorStop(0, "#fff3c7");
+    gradient.addColorStop(0.45, "#ffe5d4");
+    gradient.addColorStop(1, "#d9f2c4");
     this.ctx.fillStyle = gradient;
     this.ctx.fillRect(0, 0, this.width, this.height);
 
-    this.ctx.fillStyle = "rgba(255,255,255,0.75)";
-    for (let i = 0; i < 22; i += 1) {
-      const x = (i * 97 + performance.now() * 0.012) % this.width;
-      const y = 42 + ((i * 53) % Math.max(120, this.height * 0.55));
+    this.drawPaperGrid();
+    this.drawClouds();
+    this.drawGardenHills();
+    this.drawGrassStrip();
+    this.drawBackgroundStickers();
+  }
+
+  drawPaperGrid() {
+    this.ctx.save();
+    this.ctx.strokeStyle = "rgba(128, 92, 111, 0.09)";
+    this.ctx.lineWidth = 1;
+    const grid = 44;
+    const offset = (performance.now() * 0.008) % grid;
+    for (let x = -grid + offset; x < this.width + grid; x += grid) {
       this.ctx.beginPath();
-      this.ctx.arc(x, y, 1.6 + (i % 3), 0, Math.PI * 2);
+      this.ctx.moveTo(x, 0);
+      this.ctx.lineTo(x, this.height);
+      this.ctx.stroke();
+    }
+    for (let y = 0; y < this.height; y += grid) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, y);
+      this.ctx.lineTo(this.width, y);
+      this.ctx.stroke();
+    }
+    this.ctx.restore();
+  }
+
+  drawClouds() {
+    this.ctx.save();
+    const drift = (performance.now() * 0.012) % (this.width + 260);
+    for (let i = 0; i < 4; i += 1) {
+      const x = (i * 260 - drift + this.width + 180) % (this.width + 260) - 130;
+      const y = 58 + (i % 2) * 54;
+      this.ctx.fillStyle = "rgba(255, 255, 255, 0.58)";
+      this.ctx.beginPath();
+      this.ctx.ellipse(x, y, 44, 20, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(x + 35, y - 8, 38, 24, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(x + 76, y, 46, 20, 0, 0, Math.PI * 2);
       this.ctx.fill();
     }
+    this.ctx.restore();
+  }
+
+  drawGardenHills() {
+    const baseY = this.height * 0.72;
+    this.ctx.save();
+    this.ctx.fillStyle = "rgba(126, 207, 116, 0.38)";
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, this.height);
+    for (let x = 0; x <= this.width + 40; x += 40) {
+      const y = baseY + Math.sin(x * 0.012) * 20;
+      this.ctx.lineTo(x, y);
+    }
+    this.ctx.lineTo(this.width, this.height);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    this.ctx.fillStyle = "rgba(95, 184, 103, 0.32)";
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, this.height);
+    for (let x = 0; x <= this.width + 40; x += 40) {
+      const y = baseY + 58 + Math.cos(x * 0.015) * 18;
+      this.ctx.lineTo(x, y);
+    }
+    this.ctx.lineTo(this.width, this.height);
+    this.ctx.closePath();
+    this.ctx.fill();
+    this.ctx.restore();
+  }
+
+  drawGrassStrip() {
+    const y = this.height - 52;
+    this.ctx.save();
+    this.ctx.fillStyle = "#8fe07b";
+    this.ctx.fillRect(0, y, this.width, 52);
+    this.ctx.strokeStyle = "rgba(73, 49, 65, 0.16)";
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, y + 2);
+    this.ctx.lineTo(this.width, y + 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = "rgba(44, 139, 73, 0.36)";
+    for (let x = -10; x < this.width + 20; x += 18) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, this.height);
+      this.ctx.quadraticCurveTo(x + 7, y + 10, x + 16, this.height);
+      this.ctx.fill();
+    }
+    this.ctx.restore();
+  }
+
+  drawBackgroundStickers() {
+    this.ctx.save();
+    const stickers = [
+      { text: "✦", x: 0.12, y: 0.24, size: 22, color: "#ff9f43" },
+      { text: "✿", x: 0.82, y: 0.3, size: 24, color: "#ff8fb8" },
+      { text: "•", x: 0.72, y: 0.18, size: 34, color: "#83c8ff" },
+      { text: "✦", x: 0.22, y: 0.58, size: 18, color: "#69d38a" },
+    ];
+    stickers.forEach((sticker) => {
+      this.ctx.font = `900 ${sticker.size}px Inter, sans-serif`;
+      this.ctx.fillStyle = sticker.color;
+      this.ctx.globalAlpha = 0.46;
+      this.ctx.fillText(sticker.text, this.width * sticker.x, this.height * sticker.y);
+    });
+    this.ctx.globalAlpha = 1;
+    this.ctx.restore();
   }
 
   drawObstacles() {
