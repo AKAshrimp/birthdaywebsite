@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Birthday Flappy</title>
+    <meta name="description" content="A birthday website with music, flying vegetables, and a flappy avatar game." />
+    <script>
+      window.BIRTHDAY_LEADERBOARD_ENDPOINT = "";
+    </script>
+    <link rel="stylesheet" href="styles.css?v=7" />
+  </head>
+  <body>
+    <main id="app">
+      <section id="landing" class="screen landing-screen" aria-label="Birthday landing page">
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+        <div id="vegetableField" class="vegetable-field" aria-hidden="true"></div>
+        <button id="musicToggle" class="music-fab" type="button" aria-label="Play birthday music">▶</button>
+
+        <div class="hero-card">
+          <div class="tape tape-left"></div>
+          <div class="tape tape-right"></div>
+          <div id="avatar" class="avatar" aria-label="Friend avatar placeholder">
+          </div>
+          <p class="eyebrow">Happy Birthday</p>
+          <h1>Flappy Vincy</h1>
+          <div class="actions solo">
+            <button id="startGame" class="primary-button" type="button">Start Game</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen game-screen hidden" aria-label="Flappy birthday game">
+        <canvas id="gameCanvas" aria-label="Flappy birthday canvas"></canvas>
+        <div class="hud">
+          <div>
+            <span class="hud-label">Score</span>
+            <strong id="scoreValue">0</strong>
+          </div>
+          <div>
+            <span class="hud-label">Best</span>
+            <strong id="bestValue">0</strong>
+          </div>
+        </div>
+        <button id="backHome" class="icon-button" type="button" aria-label="Back to landing page">Home</button>
+        <div id="gameOverlay" class="game-overlay">
+          <div class="overlay-card">
+            <p class="eyebrow">Ready?</p>
+            <h2 id="overlayTitle">Tap to Fly</h2>
+            <p id="overlayMessage">Dodge the veggies.</p>
+            <button id="overlayButton" class="primary-button" type="button">Go!</button>
+          </div>
+        </div>
+      </section>
+
+      <dialog id="leaderboardDialog" class="leaderboard-dialog">
+        <form id="scoreForm" method="dialog" class="leaderboard-card">
+          <p class="eyebrow">Game Over</p>
+          <h2>Your score: <span id="finalScore">0</span></h2>
+          <label>
+            Input your name
+            <input id="playerName" name="playerName" maxlength="18" autocomplete="nickname" value="Vincy" />
+          </label>
+          <div class="actions compact">
+            <button id="submitScore" class="primary-button" type="submit">Submit Score</button>
+            <button id="skipScore" class="secondary-button" type="button">Skip</button>
+          </div>
+          <p id="leaderboardStatus" class="status-text" role="status"></p>
+          <div class="leaderboard-table-wrap">
+            <table class="leaderboard-table" aria-label="Top 10 leaderboard">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Score</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardList"></tbody>
+            </table>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script type="module" src="game.js?v=8"></script>
+  </body>
+</html>
