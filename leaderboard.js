@@ -1,5 +1,6 @@
 export const leaderboardConfig = {
   endpoint: globalThis.BIRTHDAY_LEADERBOARD_ENDPOINT || "",
+  key: globalThis.BIRTHDAY_LEADERBOARD_KEY || "",
   enabled: Boolean(globalThis.BIRTHDAY_LEADERBOARD_ENDPOINT),
 };
 
@@ -42,7 +43,7 @@ export async function submitScore({ name, score }, fetcher = globalThis.fetch) {
 
   const response = await fetcher(leaderboardConfig.endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getLeaderboardHeaders(),
     body: JSON.stringify(entry),
   });
 
@@ -73,13 +74,35 @@ export async function fetchTopScores(fetcher = globalThis.fetch) {
     return [...sessionScores];
   }
 
-  const response = await fetcher(leaderboardConfig.endpoint, { method: "GET" });
+  const url = new URL(leaderboardConfig.endpoint);
+  url.searchParams.set("select", "name,score,created_at");
+  url.searchParams.set("order", "score.desc,created_at.asc");
+  url.searchParams.set("limit", "10");
+
+  const response = await fetcher(url.toString(), {
+    method: "GET",
+    headers: getLeaderboardHeaders(),
+  });
   if (!response.ok) {
     throw new Error("Could not load cloud leaderboard.");
   }
 
   const data = await response.json();
   return Array.isArray(data) ? data.map(normalizeEntry).sort((a, b) => b.score - a.score).slice(0, 10) : [];
+}
+
+function getLeaderboardHeaders() {
+  const headers = {
+    "Content-Type": "application/json",
+    Prefer: "return=minimal",
+  };
+
+  if (leaderboardConfig.key) {
+    headers.apikey = leaderboardConfig.key;
+    headers.Authorization = `Bearer ${leaderboardConfig.key}`;
+  }
+
+  return headers;
 }
 
 function normalizeEntry(entry) {

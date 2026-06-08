@@ -87,6 +87,7 @@ test("cloud score submit stays successful if leaderboard refresh fails", async (
   const originalConfig = { ...leaderboardConfig };
   leaderboardConfig.enabled = true;
   leaderboardConfig.endpoint = "https://example.test/scores";
+  leaderboardConfig.key = "anon-key";
 
   let calls = 0;
   const fakeFetch = async () => {
@@ -104,5 +105,6 @@ test("cloud score submit stays successful if leaderboard refresh fails", async (
   } finally {
     leaderboardConfig.enabled = originalConfig.enabled;
     leaderboardConfig.endpoint = originalConfig.endpoint;
+    leaderboardConfig.key = originalConfig.key;
   }
 });
