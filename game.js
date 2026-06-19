@@ -11,6 +11,10 @@ export const OBSTACLE_IMAGE_SRCS = [
   "./assets/wall7.png?v=1",
 ];
 
+export function getPlayerImageSrc() {
+  return "./icon.png?v=3";
+}
+
 export function rectsOverlap(a, b) {
   return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
@@ -156,6 +160,8 @@ class FlappyGame {
       image.src = src;
       return image;
     });
+    this.playerImage = new Image();
+    this.playerImage.src = getPlayerImageSrc();
     this.obstacles = [];
     this.particles = [];
     this.player = { x: 0, y: 0, size: 54, velocity: 0, rotation: 0 };
@@ -519,24 +525,33 @@ class FlappyGame {
     this.ctx.rotate(this.player.rotation);
     this.ctx.shadowColor = "rgba(255,191,63,0.5)";
     this.ctx.shadowBlur = 22;
-    this.ctx.beginPath();
-    this.ctx.arc(0, 0, this.player.size / 2, 0, Math.PI * 2);
-    this.ctx.fillStyle = "#9edbff";
-    this.ctx.fill();
-    this.ctx.clip();
-    this.ctx.fillStyle = "#ffe0c2";
-    this.ctx.beginPath();
-    this.ctx.arc(0, -5, this.player.size * 0.23, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.fillStyle = "#222";
-    this.ctx.beginPath();
-    this.ctx.arc(-8, -9, 2.2, 0, Math.PI * 2);
-    this.ctx.arc(8, -9, 2.2, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.fillStyle = "#ff6f9f";
-    this.ctx.beginPath();
-    this.ctx.arc(0, 4, 4, 0, Math.PI);
-    this.ctx.fill();
+    const image = this.playerImage;
+    const size = this.player.size;
+    if (image.complete && image.naturalWidth > 0) {
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+      this.ctx.clip();
+      this.ctx.drawImage(image, -size / 2, -size / 2, size, size);
+    } else {
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, this.player.size / 2, 0, Math.PI * 2);
+      this.ctx.fillStyle = "#9edbff";
+      this.ctx.fill();
+      this.ctx.clip();
+      this.ctx.fillStyle = "#ffe0c2";
+      this.ctx.beginPath();
+      this.ctx.arc(0, -5, this.player.size * 0.23, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.fillStyle = "#222";
+      this.ctx.beginPath();
+      this.ctx.arc(-8, -9, 2.2, 0, Math.PI * 2);
+      this.ctx.arc(8, -9, 2.2, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.fillStyle = "#ff6f9f";
+      this.ctx.beginPath();
+      this.ctx.arc(0, 4, 4, 0, Math.PI);
+      this.ctx.fill();
+    }
     this.ctx.restore();
 
     this.ctx.save();

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   circleOverlapsRect,
   getObstacleImageIndexForScore,
+  getPlayerImageSrc,
   getRenderDpr,
   insetRect,
   isValidPlayerName,
@@ -60,6 +61,10 @@ test("obstacle wall image cycles every ten points", () => {
   assert.equal(getObstacleImageIndexForScore(10, 7), 1);
   assert.equal(getObstacleImageIndexForScore(69, 7), 6);
   assert.equal(getObstacleImageIndexForScore(70, 7), 0);
+});
+
+test("game player avatar comes from the latest icon image", () => {
+  assert.match(getPlayerImageSrc(), /icon\.png/);
 });
 
 test("leaderboard name and score inputs are sanitized", () => {
