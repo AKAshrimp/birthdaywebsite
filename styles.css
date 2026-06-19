@@ -375,6 +375,10 @@ h2 {
   touch-action: none;
 }
 
+.game-screen::before {
+  display: none;
+}
+
 #gameCanvas {
   display: block;
   width: 100vw;

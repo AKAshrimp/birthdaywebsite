@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   circleOverlapsRect,
   getObstacleImageIndexForScore,
@@ -65,6 +66,11 @@ test("obstacle wall image cycles every ten points", () => {
 
 test("game player avatar comes from the latest icon image", () => {
   assert.match(getPlayerImageSrc(), /icon\.png/);
+});
+
+test("game screen disables page grid overlay above the canvas", () => {
+  const css = readFileSync(new URL("./styles.css", import.meta.url), "utf8");
+  assert.match(css, /\.game-screen::before\s*{[^}]*display:\s*none;[^}]*}/s);
 });
 
 test("leaderboard name and score inputs are sanitized", () => {
